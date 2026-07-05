@@ -223,3 +223,6 @@ opencode.json
 
 # Jetbrains
 .idea
+
+# env
+.env.telegram

@@ -4,6 +4,8 @@ Telegram bot client implementing ClientInterface via aiogram.
 import os
 
 from aiogram import Bot, Dispatcher
+from aiogram.fsm.storage.memory import MemoryStorage
+import dotenv
 
 from src.backend.two_factor_authentication.entities.status import Status
 from src.client.ClientInterface import ClientInterface
@@ -12,13 +14,16 @@ from .routers import start_router, help_router, callbacks_router
 from .routers.callbacks import auth_button
 
 
+dotenv.load_dotenv(".env.telegram")
+
+
 class TelegramBot(ClientInterface):
     def __init__(self, token: str | None = None):
         self.token = token or os.getenv("TELEGRAM_TOKEN")
         if not self.token:
             raise ValueError("Telegram token not provided")
         self.bot = Bot(token=self.token)
-        self.dp = Dispatcher()
+        self.dp = Dispatcher(storage=MemoryStorage())
         self._register_routers()
 
     def _register_routers(self):
@@ -34,16 +39,18 @@ class TelegramBot(ClientInterface):
             reply_markup=auth_button(jwt),
         )
 
-    async def send_result(self, user_id, status: Status) -> None:
+    async def send_result(self, user_id: int, status: Status) -> None:
         """Send result based on Status enum."""
         mapping = {
             Status.successful: MESSAGES["result_successful"],
             Status.expired: MESSAGES["result_expired"],
             Status.illegal: MESSAGES["result_illegal"],
         }
-        text = mapping.get(status, "Unknown status")
+        if status not in mapping:
+            raise ValueError(f"Unsupported status: {status}")
+        text = mapping[status]
         await self.bot.send_message(chat_id=user_id, text=text)
 
     async def run(self):
-        """Start polling. Use in async context or via asyncio.run()."""
+        """Start polling. Call within async context."""
         await self.dp.start_polling(self.bot)

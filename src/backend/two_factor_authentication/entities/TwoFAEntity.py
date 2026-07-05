@@ -1,9 +1,10 @@
 import time
 
 from src.backend.two_factor_authentication.entities import TwoFAEntitiesManager
+from src.backend.two_factor_authentication.entities.ITwoFAEntity import ITwoFAEntity
 
 
-class TwoFAEntity:
+class TwoFAEntity(ITwoFAEntity):
     """
     Сущность хранящая информацию о попытке 2FA
 
@@ -19,6 +20,18 @@ class TwoFAEntity:
 
         # Сущность регистрируется в менеджере
         TwoFAEntitiesManager().add(self.__user_id, self)
+
+    @property
+    def nickname(self) -> str:
+        return self.__nickname
+
+    @property
+    def user_id(self) -> int:
+        return self.__user_id
+
+    @property
+    def created_at(self) -> float:
+        return self.__created_at
 
     async def send_2fa_message(self) -> None:
         """

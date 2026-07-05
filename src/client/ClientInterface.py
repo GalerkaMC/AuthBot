@@ -4,29 +4,23 @@ from src.backend.two_factor_authentication.entities import Status
 
 
 class ClientInterface(ABC):
-    """
-    Интерфейс клиента
-    """
+    """Client interface"""
 
     @abstractmethod
     async def send_auth(self, user_id: int, jwt: str) -> None:
-        """
-        Отправьте клиенту
-
-        :param user_id: ID игрока
-        :param jwt: JWT который нужно вернуть на backend при подтверждении 2FA игроком
+        """Send auth request to client.
+        :param user_id: player ID
+        :param jwt: JWT to return to backend after 2FA confirmation
         :return: None
         """
 
         pass
 
     @abstractmethod
-    async def send_result(self, user_id, status: Status) -> None:
-        """
-        Отправить игроку ответ на подтверждение
-
-        :param user_id: ID игрока
-        :param status: ответ
+    async def send_result(self, user_id: int, status: Status) -> None:
+        """Send result to player.
+        :param user_id: player ID
+        :param status: result status
         :return: None
         """
 

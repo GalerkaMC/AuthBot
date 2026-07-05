@@ -6,7 +6,7 @@ import typing
 
 import cachetools
 
-from src.backend.two_factor_authentication.entities.TwoFAEntity import TwoFAEntity
+from src.backend.two_factor_authentication.entities import ITwoFAEntity
 
 
 class TwoFAEntitiesManager:
@@ -35,7 +35,7 @@ class TwoFAEntitiesManager:
         # Структура для хранения сущностей в формате ключ (ID) значение (TwoFAEntity)
         self.entities: cachetools.LRUCache = cachetools.LRUCache(maxsize=100)
 
-    def add(self, user_id: int, entity: TwoFAEntity) -> None:
+    def add(self, user_id: int, entity: ITwoFAEntity) -> None:
         """
         Добавить сущность в менеджере
 
@@ -56,7 +56,7 @@ class TwoFAEntitiesManager:
 
         del self.entities[user_id]
 
-    def get(self, user_id) -> typing.Optional[TwoFAEntity]:
+    def get(self, user_id) -> typing.Optional[ITwoFAEntity]:
         """
         Получить сущность по ID
 
