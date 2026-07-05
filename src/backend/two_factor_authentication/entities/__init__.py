@@ -1,2 +1,3 @@
 from src.backend.two_factor_authentication.entities.TwoFAEntity import TwoFAEntity
 from src.backend.two_factor_authentication.entities.TwoFAEntitiesManager import TwoFAEntitiesManager
+from src.backend.two_factor_authentication.entities.status import Status
