@@ -1,0 +1,87 @@
+openapi: 3.0.0
+info:
+  title: AuthBot REST API
+  version: 1.0.0
+  description: |
+    REST API для микросервиса AuthBot - Telegram-бота для двухфакторной аутентификации на сервере.
+    
+    ## Общая информация
+    
+    Этот API используется для взаимодействия с сервисом двухфакторной аутентификации.
+    При попытке входа на сервер пользователь должен подтвердить вход через Telegram-бота.
+    
+    ### Последовательность действий:
+    
+    1. Сервер отправляет запрос к REST API сервиса.
+    2. Сервис ожидает подтверждение входа от пользователя через Telegram-бота.
+    3. После подтверждения сервис отправляет обратный запрос на REST API сервера, разрешая пользователю войти.
+    
+    > ⚠️ **Важно:** API не является публичным. Порт, на котором работает сервис, должен быть закрыт извне.
+
+servers:
+  - url: http://localhost:8000
+    description: Локальный сервер
+
+paths:
+  /api/v1/health/:
+    get:
+      summary: Проверка работоспособности сервера
+      description: Эндпоинт для проверки состояния сервиса
+      responses:
+        '200':
+          description: Сервис работает нормально
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: "2023-01-01T12:00:00Z"
+        '500':
+          description: Ошибка сервера
+
+  /api/v1/2fa/:
+    post:
+      summary: Запрос на авторизацию
+      description: Эндпоинт для инициации процесса двухфакторной аутентификации
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - nickname
+              properties:
+                userId:
+                  type: string
+                  description: Айди игрока в мессенджере
+                  example: "123456789"
+                nickname:
+                  type: string
+                  description: Никнейм игрока
+                  example: "player123"
+      responses:
+        '200':
+          description: Запрос успешно принят
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: pending
+                  message:
+                    type: string
+                    example: "Authorization request sent to user"
+        '400':
+          description: Некорректные параметры запроса
+        '500':
+          description: Ошибка сервера
