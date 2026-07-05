@@ -25,3 +25,10 @@ class ClientInterface(ABC):
         """
 
         pass
+
+
+    @abstractmethod
+    async def run(self):
+        """Start polling. Call within async context."""
+
+        pass

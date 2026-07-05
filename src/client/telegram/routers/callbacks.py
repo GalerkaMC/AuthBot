@@ -2,7 +2,7 @@ from aiogram import Router, F
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 
-from src.client.telegram.TelegramBot import TelegramBot
+from src.client.ClientFabric import ClientFabric
 from src.backend.two_factor_authentication.entities import Status
 from src.backend.two_factor_authentication.entities import TwoFAEntitiesManager
 
@@ -20,12 +20,12 @@ async def handle_auth(cb: CallbackQuery, callback_data: BotCallback):
     # Поэтому можно проверить ID на клиенте.
     # В другом случае замените это
     if int(payload) != cb.from_user.id:
-        await TelegramBot().send_result(cb.from_user.id , Status.illegal)
+        await ClientFabric().get().send_result(cb.from_user.id , Status.illegal)
         return
 
     entity = TwoFAEntitiesManager().get(payload)
     if not entity:
-        await TelegramBot().send_result(cb.from_user.id , Status.expired)
+        await ClientFabric().get().send_result(cb.from_user.id , Status.expired)
         return
 
     await entity.confirm()

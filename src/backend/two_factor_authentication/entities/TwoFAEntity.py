@@ -3,7 +3,7 @@ import time
 from src.backend.two_factor_authentication.entities import TwoFAEntitiesManager
 from src.backend.two_factor_authentication.entities import ITwoFAEntity
 from src.backend.two_factor_authentication.entities import Status
-from src.client.telegram.TelegramBot import TelegramBot
+from src.client.ClientFabric import ClientFabric
 
 class TwoFAEntity(ITwoFAEntity):
     """
@@ -43,7 +43,7 @@ class TwoFAEntity(ITwoFAEntity):
         # Телеграмм гарантирует, что подделать userId невозможно
         # Замените payload например на JWT, для безопасности, если это понадобится
         payload = str(self.__user_id)
-        await TelegramBot().send_auth(self.user_id, payload)
+        await ClientFabric().get().send_auth(self.user_id, payload)
 
     async def confirm(self) -> None:
         """
@@ -52,7 +52,7 @@ class TwoFAEntity(ITwoFAEntity):
         """
 
         result = await self.__request_2fa()
-        await TelegramBot().send_result(self.__user_id, result)
+        await ClientFabric().get().send_result(self.__user_id, result)
 
     async def __request_2fa(self, *args) -> Status:
         """
