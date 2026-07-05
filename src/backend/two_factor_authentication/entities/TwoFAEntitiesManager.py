@@ -33,7 +33,7 @@ class TwoFAEntitiesManager:
 
     def init(self, *args, **kwargs):
         # Структура для хранения сущностей в формате ключ (ID) значение (TwoFAEntity)
-        self.entities: cachetools.LRUCache = cachetools.LRUCache(maxsize=100)
+        self.__entities: cachetools.LRUCache = cachetools.LRUCache(maxsize=100)
 
     def add(self, user_id: int, entity: ITwoFAEntity) -> None:
         """
@@ -44,7 +44,7 @@ class TwoFAEntitiesManager:
         :return: None
         """
 
-        self.entities[user_id] = entity
+        self.__entities[user_id] = entity
 
     def remove(self, user_id: int) -> None:
         """
@@ -54,7 +54,7 @@ class TwoFAEntitiesManager:
         :return: None
         """
 
-        del self.entities[user_id]
+        del self.__entities[user_id]
 
     def get(self, user_id) -> typing.Optional[ITwoFAEntity]:
         """
@@ -64,4 +64,4 @@ class TwoFAEntitiesManager:
         :return: сущность, если она есть в менеджере, иначе None
         """
 
-        return self.entities.get(user_id)
+        return self.__entities.get(user_id)

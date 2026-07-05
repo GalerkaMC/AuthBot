@@ -2,6 +2,10 @@ from aiogram import Router, F
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 
+from src.client.telegram.TelegramBot import TelegramBot
+from src.backend.two_factor_authentication.entities import Status
+from src.backend.two_factor_authentication.entities import TwoFAEntitiesManager
+
 router = Router()
 
 class BotCallback(CallbackData, prefix="bot"):
@@ -10,9 +14,22 @@ class BotCallback(CallbackData, prefix="bot"):
 
 @router.callback_query(BotCallback.filter(F.action == "auth"))
 async def handle_auth(cb: CallbackQuery, callback_data: BotCallback):
-    # Placeholder: acknowledge receipt of JWT
-    await cb.answer()
-    await cb.message.edit_text(f"Received JWT: {callback_data.payload}")
+    payload = callback_data.payload
+
+    # Telegram гарантирует, что userId нельзя подделать
+    # Поэтому можно проверить ID на клиенте.
+    # В другом случае замените это
+    if int(payload) != cb.from_user.id:
+        await TelegramBot().send_result(cb.from_user.id , Status.illegal)
+        return
+
+    entity = TwoFAEntitiesManager().get(payload)
+    if not entity:
+        await TelegramBot().send_result(cb.from_user.id , Status.expired)
+        return
+
+    await entity.confirm()
+
 
 def auth_button(payload: str) -> InlineKeyboardMarkup:
     btn = InlineKeyboardButton(
