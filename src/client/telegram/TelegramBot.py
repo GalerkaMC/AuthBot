@@ -31,12 +31,12 @@ class TelegramBot(ClientInterface):
         self.dp.include_router(help_router)
         self.dp.include_router(callbacks_router)
 
-    async def send_auth(self, user_id: int, jwt: str) -> None:
-        """Send 2FA prompt with inline button containing JWT."""
+    async def send_auth(self, user_id: int, payload: str) -> None:
+        """Send 2FA prompt with inline button containing Pyaload."""
         await self.bot.send_message(
             chat_id=user_id,
             text=MESSAGES["auth_prompt"],
-            reply_markup=auth_button(jwt),
+            reply_markup=auth_button(payload),
         )
 
     async def send_result(self, user_id: int, status: Status) -> None:

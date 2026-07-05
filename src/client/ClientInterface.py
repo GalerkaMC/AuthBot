@@ -7,10 +7,10 @@ class ClientInterface(ABC):
     """Client interface"""
 
     @abstractmethod
-    async def send_auth(self, user_id: int, jwt: str) -> None:
+    async def send_auth(self, user_id: int, payload: str) -> None:
         """Send auth request to client.
         :param user_id: player ID
-        :param jwt: JWT to return to backend after 2FA confirmation
+        :param payload: Payload to return to backend after 2FA confirmation
         :return: None
         """
 
