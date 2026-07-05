@@ -18,7 +18,26 @@ dotenv.load_dotenv(".env.telegram")
 
 
 class TelegramBot(ClientInterface):
-    def __init__(self, token: str | None = None):
+    """
+    Класс реализует интерфейс клиент через Telegram-бота
+    Реализует Singleton паттерн, использование:
+         TelegramBot().attribute_or_method()
+    """
+
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not isinstance(cls._instance, cls):
+            cls._instance = super(TelegramBot, cls).__new__(cls, *args, **kwargs)
+            cls._initialized = False
+        return cls._instance
+
+    def __init__(self, *args, **kwargs):
+        if not self.__class__._initialized:
+            self.__class__._initialized = True  # set initial flag to True
+            self.init(*args, **kwargs)
+
+    def init(self, token: str | None = None):
         self.token = token or os.getenv("TELEGRAM_TOKEN")
         if not self.token:
             raise ValueError("Telegram token not provided")
