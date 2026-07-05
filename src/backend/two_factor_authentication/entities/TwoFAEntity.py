@@ -1,0 +1,40 @@
+import time
+
+from src.backend.two_factor_authentication.entities import TwoFAEntitiesManager
+
+
+class TwoFAEntity:
+    """
+    Сущность хранящая информацию о попытке 2FA
+
+    nickname: str - Никнейм игрока
+    user_id: int - ID игрока в Telegram
+    created_at: float - Время создания попытки 2FA
+
+    """
+    def __init__(self, nickname: str, user_id: int) -> None:
+        self.__nickname: str = nickname
+        self.__user_id: int = user_id
+        self.__created_at: float = time.time()
+
+        # Сущность регистрируется в менеджере
+        TwoFAEntitiesManager().add(self.__user_id, self)
+
+    async def send_2fa_message(self) -> None:
+        """
+        Отправить попытку 2FA игроку
+        :return: None
+        """
+
+        pass
+
+    async def confirm(self) -> None:
+        """
+        Подтвердить вход
+        :return: None
+        """
+
+        pass
+
+
+

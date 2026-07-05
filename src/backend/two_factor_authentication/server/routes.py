@@ -7,7 +7,7 @@ from datetime import datetime
 
 from fastapi import APIRouter
 
-from backend.models import AuthRequest
+from src.backend.server.models import AuthRequest
 
 router = APIRouter()
 
