@@ -53,4 +53,4 @@ class TelegramBot(ClientInterface):
 
     async def run(self):
         """Start polling. Call within async context."""
-        await self.dp.start_polling(self.bot)
+        await self.dp.start_polling(self.bot, handle_signals=False)
