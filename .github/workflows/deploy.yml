@@ -1,0 +1,54 @@
+name: deploy
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup python
+        uses: actions/setup-python@v6
+
+      - name: Create env files
+        env:
+          BOT_TOKEN: ${{secrets.BOT_TOKEN}}
+        run: |
+          echo "BOT_TOKEN=$BOT_TOKEN" >> .env.telegram
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v47
+        with:
+          since_last_remote_commit: true
+          separator: ","
+
+      - name: Copy files via SSH
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{secrets.SSH_HOST}}
+          key: ${{secrets.SSH_PRIVATE_KEY}}
+          port: ${{secrets.SSH_DEPLOY_PORT}}
+          username: ${{secrets.SSH_USER}}
+          source: .
+          target: ${{ vars.DEPLOY_PATH }}
+
+      - name: Unpack
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{secrets.SSH_HOST}}
+          key: ${{secrets.SSH_PRIVATE_KEY}}
+          port: ${{secrets.SSH_DEPLOY_PORT}}
+          username: ${{secrets.SSH_USER}}
+          script: |
+            set -e
+            sudo systemctl restart telegram_bot
