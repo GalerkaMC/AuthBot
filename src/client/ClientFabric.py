@@ -1,4 +1,3 @@
-from src.client.telegram.TelegramBot import TelegramBot
 from src.client.ClientInterface import ClientInterface
 
 class ClientFabric:
@@ -23,7 +22,10 @@ class ClientFabric:
             self.init(*args, **kwargs)
 
     def init(self, *args, **kwargs):
-        self.__client = TelegramBot()
+        self.__client = None
+
+    def set_client(self, client):
+        self.__client = client
 
     def get(self) -> ClientInterface:
         return self.__client

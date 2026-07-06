@@ -7,6 +7,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 import dotenv
 
+from src.client.ClientFabric import ClientFabric
 from src.backend.two_factor_authentication.entities.status import Status
 from src.client.ClientInterface import ClientInterface
 from .messages import MESSAGES
@@ -44,6 +45,8 @@ class TelegramBot(ClientInterface):
         self.bot = Bot(token=self.token)
         self.dp = Dispatcher(storage=MemoryStorage())
         self._register_routers()
+        ClientFabric().set_client(self)
+
 
     def _register_routers(self):
         self.dp.include_router(start_router)
