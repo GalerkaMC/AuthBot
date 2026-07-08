@@ -11,7 +11,7 @@ from src.backend.two_factor_authentication.entities import Status
 from src.client.ClientFabric import ClientFabric
 
 
-dotenv.load_dotenv()
+dotenv.load_dotenv(".env.config")
 logger = logging.getLogger("bot")
 
 class TwoFAEntity(ITwoFAEntity):
@@ -80,7 +80,7 @@ class TwoFAEntity(ITwoFAEntity):
         }
 
         request_body = {
-            'userId': self.__user_id,
+            'userId': str(self.__user_id),
             'nickname': self.__nickname,
             'status': "approved"
         }
@@ -99,7 +99,7 @@ class TwoFAEntity(ITwoFAEntity):
                         return Status.expired
 
                     else:
-                        logger.error("Confirmation request failed, content:", await response.text())
+                        logger.error(f"Confirmation request failed, content: {await response.text()}")
                         return Status.unexpected_exception
 
         except aiohttp.ClientError as e:

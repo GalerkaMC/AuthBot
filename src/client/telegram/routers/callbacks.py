@@ -23,12 +23,13 @@ async def handle_auth(cb: CallbackQuery, callback_data: BotCallback):
         await ClientFabric().get().send_result(cb.from_user.id , Status.illegal)
         return
 
-    entity = TwoFAEntitiesManager().get(payload)
+    entity = TwoFAEntitiesManager().get(int(payload))
     if not entity:
         await ClientFabric().get().send_result(cb.from_user.id , Status.expired)
         return
 
     await entity.confirm()
+    await cb.answer()
 
 
 def auth_button(payload: str) -> InlineKeyboardMarkup:
