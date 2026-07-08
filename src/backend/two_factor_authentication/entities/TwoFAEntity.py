@@ -1,9 +1,18 @@
+import logging
 import time
+import os
+
+import aiohttp
+import dotenv
 
 from src.backend.two_factor_authentication.entities import TwoFAEntitiesManager
 from src.backend.two_factor_authentication.entities import ITwoFAEntity
 from src.backend.two_factor_authentication.entities import Status
 from src.client.ClientFabric import ClientFabric
+
+
+dotenv.load_dotenv()
+logger = logging.getLogger("bot")
 
 class TwoFAEntity(ITwoFAEntity):
     """
@@ -53,13 +62,46 @@ class TwoFAEntity(ITwoFAEntity):
 
         result = await self.__request_2fa()
         await ClientFabric().get().send_result(self.__user_id, result)
+        TwoFAEntitiesManager().remove(self.__user_id)
 
-    async def __request_2fa(self, *args) -> Status:
+    async def __request_2fa(self) -> Status:
         """
         Запрос на сервер
 
-        :param args:
         :return: Статус запроса
         """
 
-        return Status.successful
+        api_token = os.getenv("HOST_API_KEY")
+        base_url = os.getenv("MINECRAFT_SERVER_BASE_URL")
+        confirmation_url = os.getenv("CONFIRMATION_URL")
+        headers = {
+            "Content-Type": "application/json",
+            "X-Api-Key": api_token
+        }
+
+        request_body = {
+            'userId': self.__user_id,
+            'nickname': self.__nickname,
+            'status': "approved"
+        }
+
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                        f"{base_url}{confirmation_url}",
+                        headers=headers,
+                        json=request_body) as response:
+
+                    if response.status == 200:
+                        return Status.successful
+
+                    if response.status == 409:
+                        return Status.expired
+
+                    else:
+                        logger.error("Confirmation request failed, content:", await response.text())
+                        return Status.unexpected_exception
+
+        except aiohttp.ClientError as e:
+            logger.error("Confirmation request failed", e.args, e.__repr__())
+            return Status.unexpected_exception
