@@ -3,6 +3,7 @@ from aiogram.filters.callback_data import CallbackData
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup
 
 from src.client.ClientFabric import ClientFabric
+from src.client.telegram.messages import MESSAGES
 from src.backend.two_factor_authentication.entities import Status
 from src.backend.two_factor_authentication.entities import TwoFAEntitiesManager
 
@@ -34,7 +35,7 @@ async def handle_auth(cb: CallbackQuery, callback_data: BotCallback):
 
 def auth_button(payload: str) -> InlineKeyboardMarkup:
     btn = InlineKeyboardButton(
-        text="Confirm",
+        text=MESSAGES["confirm_auth_button_test"],
         callback_data=BotCallback(action="auth", payload=payload).pack()
     )
     return InlineKeyboardMarkup(inline_keyboard=[[btn]])
