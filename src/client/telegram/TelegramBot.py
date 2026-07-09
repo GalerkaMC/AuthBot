@@ -11,7 +11,7 @@ from src.client.ClientFabric import ClientFabric
 from src.backend.two_factor_authentication.entities.status import Status
 from src.client.ClientInterface import ClientInterface
 from .messages import MESSAGES
-from .routers import start_router, help_router, callbacks_router
+from .routers import start_router, help_router, callbacks_router, apply_router
 from .routers.callbacks import auth_button
 
 
@@ -52,6 +52,7 @@ class TelegramBot(ClientInterface):
         self.dp.include_router(start_router)
         self.dp.include_router(help_router)
         self.dp.include_router(callbacks_router)
+        self.dp.include_router(apply_router)
 
     async def send_auth(self, user_id: int, payload: str) -> None:
         """Send 2FA prompt with inline button containing Pyaload."""
