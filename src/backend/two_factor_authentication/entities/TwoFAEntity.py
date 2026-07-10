@@ -71,12 +71,10 @@ class TwoFAEntity(ITwoFAEntity):
         :return: Статус запроса
         """
 
-        api_token = os.getenv("HOST_API_KEY")
         base_url = os.getenv("MINECRAFT_SERVER_BASE_URL")
         confirmation_url = os.getenv("CONFIRMATION_URL")
         headers = {
-            "Content-Type": "application/json",
-            "X-Api-Key": api_token
+            "Content-Type": "application/json"
         }
 
         request_body = {
