@@ -46,6 +46,7 @@ jobs:
           proxy_passphrase: ${{secrets.VPN_PASSPHRASE}}
           source: .
           target: ${{ vars.DEPLOY_PATH }}
+          debug: true
 
       - name: Unpack
         uses: appleboy/ssh-action@v1
