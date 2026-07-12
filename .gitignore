@@ -226,3 +226,7 @@ opencode.json
 
 # env
 .env.telegram
+
+
+vars.txt
+secrets.txt
